@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import json
 Rating = {
     "One":1,
     "Two":2,
@@ -54,6 +55,9 @@ def save_to_csv(books,filename):
         writer = csv.DictWriter(file,fieldnames=["title","price","rating"])
         writer.writeheader()
         writer.writerows(books)
+def save_to_json(books,filename):
+    with open(filename,"w",encoding="utf-8") as file:
+        json.dump(books,file,indent=4)        
 def main():
     books_data = []
     url_1 = "https://books.toscrape.com/"
@@ -65,6 +69,7 @@ def main():
         books_data.extend(books)
     print(len(books_data))
     save_to_csv(books_data,"books.csv")
+    save_to_json(books_data,"books.json")
 main()        
 
             
