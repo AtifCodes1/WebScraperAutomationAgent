@@ -1,5 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
+Rating = {
+    "One":1,
+    "Two":2,
+    "Three":3,
+    "Four":4,
+    "Five":5
+}
 def scrape_page(url):
     page_books = []
     try:
@@ -17,7 +25,7 @@ def scrape_page(url):
         if title_tag is None:
             print("skiping book,Title not found")
             continue
-        title = title_tag.a["title"]
+        title = title_tag.a["title"].strip()
         price_tag = book.find("p",class_="price_color")
         if price_tag is None:
             print("skiping book,Price not found")
@@ -31,12 +39,21 @@ def scrape_page(url):
             continue
         rating = rating_tag["class"]
         rating = rating[1]
+        rating = Rating.get(rating)
+        if rating is None:
+            print(f"Skiping book {title} invalid rating ")
+            continue
         data ={
             "title":title,
             "price":price,
             "rating":rating }
         page_books.append(data)
-    return page_books    
+    return page_books  
+def save_to_csv(books,filename):
+    with open(filename,"w",newline = "",encoding="utf-8")  as file:
+        writer = csv.DictWriter(file,fieldnames=["title","price","rating"])
+        writer.writeheader()
+        writer.writerows(books)
 def main():
     books_data = []
     url_1 = "https://books.toscrape.com/"
@@ -47,6 +64,7 @@ def main():
         books = scrape_page(url_2)
         books_data.extend(books)
     print(len(books_data))
+    save_to_csv(books_data,"books.csv")
 main()        
 
             
