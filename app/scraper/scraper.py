@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import json
+import pandas as pd
 Rating = {
     "One":1,
     "Two":2,
@@ -57,7 +58,10 @@ def save_to_csv(books,filename):
         writer.writerows(books)
 def save_to_json(books,filename):
     with open(filename,"w",encoding="utf-8") as file:
-        json.dump(books,file,indent=4)        
+        json.dump(books,file,indent=4)    
+def save_to_excel(books,filename):
+    df = pd.DataFrame(books)
+    df.to_excel(filename,index=False)            
 def main():
     books_data = []
     url_1 = "https://books.toscrape.com/"
@@ -70,6 +74,7 @@ def main():
     print(len(books_data))
     save_to_csv(books_data,"books.csv")
     save_to_json(books_data,"books.json")
+    save_to_excel(books_data,"books.xlsx")
 main()        
 
             
