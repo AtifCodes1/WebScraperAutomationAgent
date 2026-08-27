@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-import csv
-import json
-import pandas as pd
+from app.config.config_loader import load_config
+from app.exporters.csv_exporter import save_to_csv
+from app.exporters.json_exporter import save_to_json
+from app.exporters.excel_exporter import save_to_excel
 Rating = {
     "One":1,
     "Two":2,
@@ -50,22 +51,7 @@ def scrape_page(url):
             "price":price,
             "rating":rating }
         page_books.append(data)
-    return page_books  
-def save_to_csv(books,filename):
-    with open(filename,"w",newline = "",encoding="utf-8")  as file:
-        writer = csv.DictWriter(file,fieldnames=["title","price","rating"])
-        writer.writeheader()
-        writer.writerows(books)
-def save_to_json(books,filename):
-    with open(filename,"w",encoding="utf-8") as file:
-        json.dump(books,file,indent=4)    
-def save_to_excel(books,filename):
-    df = pd.DataFrame(books)
-    df.to_excel(filename,index=False)  
-def load_config(filename):
-    with open(filename,"r",encoding="utf-8")as file:
-        config = json.load(file)
-        return config              
+    return page_books                    
 def main():
     books_data = []
     config = load_config("config.json")
