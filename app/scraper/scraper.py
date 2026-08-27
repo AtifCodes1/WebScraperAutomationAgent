@@ -16,7 +16,7 @@ def scrape_page(url):
         response = requests.get(url,timeout=10)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        print(f"Re  uest failed {url}")
+        print(f"Request failed {url}")
         print(e)
         return []    
     html = response.text
@@ -61,20 +61,27 @@ def save_to_json(books,filename):
         json.dump(books,file,indent=4)    
 def save_to_excel(books,filename):
     df = pd.DataFrame(books)
-    df.to_excel(filename,index=False)            
+    df.to_excel(filename,index=False)  
+def load_config(filename):
+    with open(filename,"r",encoding="utf-8")as file:
+        config = json.load(file)
+        return config              
 def main():
     books_data = []
-    url_1 = "https://books.toscrape.com/"
+    config = load_config("config.json")
+    url_1 = config["url"]
     books = scrape_page(url_1)
     books_data.extend(books)
-    for page_no in range(2,51):
-        url_2 = f"https://books.toscrape.com/catalogue/page-{page_no}.html"
+    pages = config["pages"]
+    page_url = config["page_url"]
+    for page_no in range(2,pages + 1):
+        url_2 = page_url.format(page=page_no)
         books = scrape_page(url_2)
         books_data.extend(books)
     print(len(books_data))
-    save_to_csv(books_data,"books.csv")
-    save_to_json(books_data,"books.json")
-    save_to_excel(books_data,"books.xlsx")
+    save_to_csv(books_data,config["output"]["csv"])
+    save_to_json(books_data,config["output"]["json"])
+    save_to_excel(books_data,config["output"]["excel"])
 main()        
 
             
