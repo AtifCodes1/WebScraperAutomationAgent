@@ -1,7 +1,5 @@
 {
     "url":"https://books.toscrape.com/",
-    "page_url":"https://books.toscrape.com/catalogue/page-{page}.html",
-    "pages":50,
     "output":{
         "csv":"books.csv",
         "json":"books.json",
