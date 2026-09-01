@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
+from fastapi.staticfiles import StaticFiles
 templates = Jinja2Templates(directory="app/templates")
 app = FastAPI(
     title="Web Scraper Automation Platform",
@@ -15,3 +16,6 @@ def moggli(request : Request):
         name="index.html",
         context={"request" : request}
     )
+app.mount("/static",
+          StaticFiles(directory="app/static"),
+          name="static")
