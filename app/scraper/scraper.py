@@ -12,18 +12,22 @@ Rating = {
     "Four":4,
     "Five":5
 }
-def scrape_page(url):
-    page_books = []
+def _fetch_soup(url):
     try:
-        response = requests.get(url,timeout=10)
+        response = requests.get(url, timeout=10)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"Request failed {url}")
         print(e)
-        return []    
+        return None
     html = response.text
-    soup = BeautifulSoup(html,"html.parser")
-    next_page = soup.find("li", class_="next")
+    soup = BeautifulSoup(html, "html.parser")
+    return soup    
+def scrape_page(url):
+    page_books = []
+    soup = _fetch_soup(url)
+    if soup is None:
+        return []
     books = soup.find_all("li",class_="col-xs-6 col-sm-4 col-md-3 col-lg-3")
     for book in books:
         title_tag = book.find("h3")
@@ -53,27 +57,32 @@ def scrape_page(url):
             "price":price,
             "rating":rating }
         page_books.append(data)
-    return page_books,next_page                    
-def main():
-    books_data = []
-    config = load_config("config.json")
-    url_1 = config["url"]
-    while True:
-        scrape = scrape_page(url_1)
-        books = scrape[0]
-        books_data.extend(books)
-        next_page = scrape[1]
+    return page_books
+def scrape_website(url):
+    books_data =[]
+    current_url = url
+    while current_url:
+        books = scrape_page(current_url)
+        books_data.extend(books)  
+        soup = _fetch_soup(current_url)
+        next_page = soup.find("li", class_="next")  
         if next_page is None:
-            break
+            current_url = None 
         else:
             next_link = next_page.find("a")
-            next_link = next_link["href"] 
-            url_1 = urljoin(url_1, next_link)
+            next_href = next_link["href"]
+            current_url = urljoin(current_url, next_href)
+    return books_data                    
+def main():
+    config = load_config("config.json")
+    url = config["url"]
+    books_data = scrape_website(url)
     print(len(books_data))
     save_to_csv(books_data,config["output"]["csv"])
     save_to_json(books_data,config["output"]["json"])
     save_to_excel(books_data,config["output"]["excel"])
-main()        
+if __name__ == "__main__":
+    main()        
 
             
 

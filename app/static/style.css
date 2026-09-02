@@ -3,21 +3,46 @@ body{
     margin: 0%;
     padding: 0%;
 }
-h1{
+header{
     text-align: center;
 }
-form{
-    width: 500px;
-    margin: 20px auto;
+header h1{
+    margin-bottom: 10px;
 }
-input{
+header p{
+    margin-top: 0;
+}
+main{
+    width: 90%;
+    max-width: 800px;
+    margin: 30px auto;
+}
+input[type="url"]{
     width: 100%;
     padding: 12px;
-    margin-top: 10px;
+    margin-top: 8px;
+    margin-bottom: 20px;
     box-sizing: border-box;
 }
 button{
-    margin-top: 20px;
-    padding: 12px 20px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
+}
+.scraper-card,
+.results-card {
+    padding: 30px;
+    margin-bottom: 25px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+.scraper-card h2,
+.results-card h2 {
+    margin-top: 0;
+}
+.output-options {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
 }

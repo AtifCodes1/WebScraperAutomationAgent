@@ -3,7 +3,11 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+from app.scraper.scraper import scrape_website
 templates = Jinja2Templates(directory="app/templates")
+class ScrapeRequest(BaseModel):
+    url:str
 app = FastAPI(
     title="Web Scraper Automation Platform",
     description="A web scraping and data automation platform",
@@ -19,3 +23,10 @@ def moggli(request : Request):
 app.mount("/static",
           StaticFiles(directory="app/static"),
           name="static")
+@app.post("/scrape")
+def scrape(request: ScrapeRequest):
+    books = scrape_website(request.url)
+    return {
+        "url": request.url,
+        "books": books
+    }
